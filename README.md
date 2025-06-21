@@ -13,7 +13,17 @@ PRNGLIB is written in C99 using the [Zed Editor](https://zed.dev/) with the [Ope
     prng_init(&rng, PRNG_PCG32, prng_default_seed(), 16, NULL);
     printf("  Float: %.6f, U32: %u\n", prng_next_float(&rng), prng_next_u32(&rng));
 
-// Example 2: Seed validation
+// Example 2: Dice rolls, time seed, no warmups, no logging
+    prng_state_t rng;
+    prng_init(&rng, PRNG_XORSHIFT, prng_time_seed(), 0, NULL);
+    printf("Dice roll %u\n", prng_range_u32(prng_next_u32(&rng), 1, 6));
+
+// Example 3: Pick an unbiased card, time seed, no warmups, no logging
+    prng_state_t rng;
+    prng_init(&rng, PRNG_XORSHIFT, prng_time_seed(), 0, NULL);
+    printf("Card choice %u\n", prng_range_exact(&rng, 1, 52));
+
+// Example 4: Seed validation
     uint64_t bad_seed = 0;
     if (!prng_is_valid_seed(bad_seed, PRNG_MARSAGLIA)) {
         printf("Seed 0 is invalid for Marsaglia MWC (as expected)\n");
