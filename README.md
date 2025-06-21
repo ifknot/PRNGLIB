@@ -5,7 +5,35 @@ A retro-programming compatible collection of Pseudo Random Number Program Genera
 
 PRNGLIB is written in C99 using the [Zed Editor](https://zed.dev/) with the [Open Watcom 2](https://open-watcom.github.io/) Compiler and tested with [Doxbox-X](https://dosbox-x.com/) and [EMU86](https://gcallah.github.io/Emu86/index.html).
 
-## Performance Summary
+## Usage:
+
+```c
+// Example 1: Basic initialization with default seed, 16 warmup rounds and no logging
+    prng_state_t rng;
+    prng_init(&rng, PRNG_PCG32, prng_default_seed(), 16, NULL);
+    printf("  Float: %.6f, U32: %u\n", prng_next_float(&rng), prng_next_u32(&rng));
+
+// Example 2: Seed validation
+    uint64_t bad_seed = 0;
+    if (!prng_is_valid_seed(bad_seed, PRNG_MARSAGLIA)) {
+        printf("Seed 0 is invalid for Marsaglia MWC (as expected)\n");
+    }
+    
+    // Get a valid seed
+    uint64_t good_seed = prng_time_seed();
+    while (!prng_is_valid_seed(good_seed, PRNG_XORSHIFT)) {
+        good_seed = prng_time_seed();  // Should be extremely rare
+    }
+```
+## Seed Logging
+
+PRNGLIB has simple seed logging - important for reproducibility e.g. debugging or experiments:
+```c
+prng_init(&rng, PRNG_PCG32, 0xABCD1234, 16, logfile);
+// Logs: "[PRNG] Engine=pcg32 Seed=0xABCD1234 Timestamp=1712345678"
+```
+
+## Performance:
 
 | Algorithm       | Period      | Speed  | TestU01 (BigCrush) | PractRand (2⁶⁴) | Best For                          |
 |-----------------|------------|--------|--------------------|------------------|-----------------------------------|
